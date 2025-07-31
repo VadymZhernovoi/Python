@@ -94,7 +94,7 @@ class DBConnector:
             raise
         except pymysql.err.OperationalError as e:
             print(f" Ошибка подключения к MySQL: {e}")
-            conn = pymysql.connect(**self.config)
+            #conn = pymysql.connect(**self.config)
             raise
 
         except Exception as e:

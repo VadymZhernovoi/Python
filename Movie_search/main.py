@@ -12,7 +12,7 @@ from modules.db_request import (select_all_category, select_by_category_cols, se
                                 select_by_title_cols, select_by_title_body)
 from modules.parm_const import (MAIN_MENU, MENU_STATISTICS, SEARCH_TYPE, COL_CATEGORY_ID, COL_CATEGORY,
                                 COL_YEAR_MIN, COL_YEAR_MAX, KEY_RETURN, TXT_RETURN, KEY_EXIT, TXT_EXIT,
-                                COL_KEYWORD_MONGO, BEGIN_MSG_STATISTICS)
+                                COL_KEYWORD_MONGO, BEGIN_MSG_STATISTICS, COLOR_ITEM_MENU, COLOR_RESET)
 
 
 def form_menu(menu: tuple[dict], title: str = '', main: bool = False):
@@ -34,14 +34,21 @@ def form_menu(menu: tuple[dict], title: str = '', main: bool = False):
         try:
             for i in range(len(menu)):
                 r = i + 1
-                msg = f"[{r}]. {menu[i]["name"]}"
-                print_color(msg, "Blue", False, False)
+                # msg = f"[{r}]. {menu[i]["name"]}"
+                # print_color(msg, "Blue", False, False)
+                msg = f"{COLOR_ITEM_MENU}{r}{COLOR_RESET}. {menu[i]["name"]}"
+                print(msg)
             print("-" * max_len_title)
             if main:
-                msg = f"[{KEY_RETURN[0]}] / [{KEY_EXIT[0]}] - {KEY_EXIT[1]}"
+                # msg = f"[{KEY_RETURN[0]}] / [{KEY_EXIT[0]}] - {KEY_EXIT[1]}"
+                msg = (f"{COLOR_ITEM_MENU}{KEY_RETURN[0]}{COLOR_RESET} / "
+                      f"{COLOR_ITEM_MENU}{KEY_EXIT[0]}{COLOR_RESET} - {KEY_EXIT[1]}")
+                print(msg, "\n")
             else:
                 msg = f"{TXT_RETURN} ([{KEY_EXIT[0]}] - {KEY_EXIT[1]})"
-            print_color(msg, "Cyan", False)
+                # msg = f"{TXT_RETURN} ({COLOR_ITEM_MENU}{KEY_EXIT[0]}{COLOR_RESET} - {KEY_EXIT[1]})"
+                print_color(msg, "Blue", False)
+
             choice = input("Выберите: ")
 
             check_for_exit(choice, main)
@@ -91,7 +98,7 @@ def search_by_title():
     """ Команда поиска по ключевому слову в названии фильма """
 
     while True:
-        msg = f"Введите ключевое слово для поиска в названии ([Enter] - {KEY_RETURN[1]}, {TXT_EXIT}) 🔑"
+        msg = f"Введите ключевое слово для поиска в названии ([Enter] - {KEY_RETURN[1]} / {TXT_EXIT}) 🔑"
         keyword = input_color(msg, "Cyan").strip().upper()
 
         check_for_exit(keyword)
@@ -128,7 +135,7 @@ def search_by_category():
     string = ''
     while True:
         try:
-            msg = f"Введите Номер / Название жанра из списка ({TXT_RETURN}, {TXT_EXIT})"
+            msg = f"Введите Номер / Название жанра из списка ({TXT_RETURN} / {TXT_EXIT})"
             string = input_color(msg, "Cyan")
 
             check_for_exit(string)
@@ -232,10 +239,10 @@ def show_popular_query():
     команда вывода статистики популярных запросов
     """
     print_title_statistics("show_popular_query")
-    tabl_popular = get_popular()
     # tabl_keyword = show_popular_keyword()
     # tabl_category = show_popular_category()
     # tabl_popular = combined_lists(tabl_keyword, tabl_category)  # склеим две таблицы
+    tabl_popular = get_popular()
     show_statistics(tabl_popular)
 
     return None

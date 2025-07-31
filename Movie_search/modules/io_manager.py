@@ -8,7 +8,7 @@ from .db_connector import db_connector
 from .parm_const import (PAGE_SIZE, COL_YEAR_MAX, MONGO_COLS, TOP_QUERIES, COL_SEPARATOR,
                          COL_KEYWORD_MONGO, KEY_RETURN, TXT_RETURN, KEY_EXIT, TXT_EXIT,
                          SEARCH_TYPE, COL_CATEGORY, COL_CATEGORY_MONGO, COL_YEAR_START_MONGO,
-                         COL_YEAR_STOP_MONGO, COLOR_SELECT, COLOR_RESET, COL_FILM)
+                         COL_YEAR_STOP_MONGO, COLOR_SELECT, COLOR_RESET, COL_FILM, COLOR_TABLE_COLS)
 
 console = Console(force_terminal=True, color_system="truecolor")
 _BRACKETS = re.compile(r"\[([^]]+)]")  # компилируем регулярное выражение в объект шаблона для repl_brackets()
@@ -23,7 +23,7 @@ def repl_brackets(msg: str, color: str = "red"):
     :return: отформатированная строка
     """
 
-    return _BRACKETS.sub(rf"[{color.lower()}]\1[/]", msg) #{color.lower()}]+[/]", msg)
+    return _BRACKETS.sub(rf"[{color.lower()}]\1[/]", msg)
 
 
 def input_color(msg: str, color: str = "red", before: bool = True) -> str:
@@ -137,12 +137,16 @@ def display_page(cols: list, rows: list[list], page_num: int, total_pages: int, 
     """
     # Создание объекта таблицы
     table = PrettyTable()
+    table.header = True
+    # table._validate_field_names = False
     table.field_names = cols                                # шапка таблицы
-    table.align[COL_SEPARATOR] = "r"                        # колонка - выравниваем по правому краю
-    table.align[MONGO_COLS["search_type"]] = "l"            # соответственно по левому краю
-    table.align[MONGO_COLS[COL_CATEGORY_MONGO[0]]] = "l"
-    table.align[COL_FILM]= "l"
-    table.align[COL_CATEGORY]= "l"
+    table.field_names = [f"{COLOR_TABLE_COLS}{name}{COLOR_RESET}" for name in cols]
+    table.align[f"{COLOR_TABLE_COLS}{COL_SEPARATOR}{COLOR_RESET}"] = "r"                        # колонка - выравниваем по правому краю
+    table.align[f"{COLOR_TABLE_COLS}{MONGO_COLS["search_type"]}{COLOR_RESET}"] = "l"            # соответственно по левому краю
+    table.align[f"{COLOR_TABLE_COLS}{MONGO_COLS[COL_CATEGORY_MONGO[0]]}{COLOR_RESET}"] = "l"
+    table.align[f"{COLOR_TABLE_COLS}{COL_FILM}{COLOR_RESET}"] = "l"
+    table.align[f"{COLOR_TABLE_COLS}{COL_CATEGORY}{COLOR_RESET}"] = "l"
+    table.align[f"{COLOR_TABLE_COLS}{COL_KEYWORD_MONGO[1]}{COLOR_RESET}"] = "l"
 
     for align in alignment:
         table.align[align[0]] = align[1]    # выравниваем по принятому параметру
@@ -167,8 +171,8 @@ def input_year(txt: str, year_min: int, year_max: int) -> int | None:
     :return: год, если условия ввода выполнены, или None - если не выполнены
     """
     year_enter = year_max if txt == COL_YEAR_MAX else year_min
-    print_color(f"Укажите [{txt}].", "yellow", True, False)
-    msg = f"Доступные значения: [{year_min}] - [{year_max}] ([Enter] - {year_enter}, {TXT_RETURN}, {TXT_EXIT}) -->"
+    print_color(f"Укажите [{txt}]", "yellow", True, False)
+    msg = f"Доступные значения: [{year_min}] - [{year_max}] ([Enter] - {year_enter} / {TXT_RETURN} / {TXT_EXIT})"
     string = input_color(msg, "Cyan", False)
     try:
         check_for_exit(string)
@@ -301,10 +305,6 @@ def show_single_statistics(tabl: list[dict]):
     for key in max_dict.keys():  # добавляем колонки по ключам
         cols.append(key)
     rows = add_row_in_table(tabl, rows, True)
-    # print(tabl, rows)
-    # for i, item in enumerate(tabl, start=1):
-    #     row = create_row(item, True)
-    #     rows.append(row)
     for i in range(len(rows)):
         rows[i] = [i + 1] + rows[i]
     cols = ["№"] + cols
@@ -315,20 +315,6 @@ def show_single_statistics(tabl: list[dict]):
 
     return None
 
-
-# def combined_lists(tabl_first: list[dict], tabl_second: list[dict]):
-#     if is_list_of_dicts_not_empty(tabl_first) and is_list_of_dicts_not_empty(tabl_second):
-#         combined = sorted(tabl_first + tabl_second,  # склеиваем два результата выборки
-#                           key=lambda d: d.get(COL_CNT_KEYWORD, d.get(COL_CNT_CATEGORY, 0)),
-#                           # сортируем по ключам COL_CNT_KEYWORD и COL_CNT_CATEGORY
-#                           reverse=True)[:TOP_QUERIES]  # сортируем в обратном порядке и оставляем только TOP_QUERIES
-#
-#         return combined
-#
-#     else:
-#         print_color("[Данных не найдено!]", "yellow")
-#
-#         return None
 
 
 def show_double_statistics(tabl_first: list[dict], tabl_second: list[dict]):
@@ -510,3 +496,18 @@ def display_selected_category(search_parm: dict, print_run: bool = True) -> str:
         print_color(msg, "yellow", True, False)
 
     return msg
+
+
+# def combined_lists(tabl_first: list[dict], tabl_second: list[dict]):
+#     if is_list_of_dicts_not_empty(tabl_first) and is_list_of_dicts_not_empty(tabl_second):
+#         combined = sorted(tabl_first + tabl_second,  # склеиваем два результата выборки
+#                           key=lambda d: d.get(COL_CNT_KEYWORD, d.get(COL_CNT_CATEGORY, 0)),
+#                           # сортируем по ключам COL_CNT_KEYWORD и COL_CNT_CATEGORY
+#                           reverse=True)[:TOP_QUERIES]  # сортируем в обратном порядке и оставляем только TOP_QUERIES
+#
+#         return combined
+#
+#     else:
+#         print_color("[Данных не найдено!]", "yellow")
+#
+#         return None
