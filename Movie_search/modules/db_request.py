@@ -1,7 +1,7 @@
 from .parm_const import COL_CATEGORY, COL_YEAR_MAX, COL_YEAR_MIN, COL_FILM_CNT, COL_FILM, COL_FILM_YEAR
 
+# ------------------------------------------------------------
 # запрос для выборки списка категорий
-
 select_all_category = f"""
     SELECT
         c.name              AS "{COL_CATEGORY}",

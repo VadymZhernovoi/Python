@@ -104,7 +104,7 @@ def search_by_title():
         # на всякий случай приведём к одному регистру, завтра могут появиться другие данные или изменятся настройки ядра БД
         select_parm = (f"%{keyword}%",)
         msg_search = f"Поиск по ключевому слову {COL_KEYWORD_MONGO[2]}'{keyword}'"
-        row_cnt = display_page_by_page(select_by_title_cols, select_by_title_body, select_parm, msg_search)
+        row_cnt = display_page_by_page(select_by_title_cols, select_by_title_body, select_parm, msg_search, keyword)
         if row_cnt:  # записываем в историю поиска
             param = {"keyword": keyword}
             db_connector.insert_log(SEARCH_TYPE[0], param, row_cnt)
@@ -123,6 +123,7 @@ def search_by_category():
     cols.extend(list(categories[0])[:-1])
     # добавляю строки в таблицу (кроме category_id)
     rows = [[i] + [item[col] for col in cols[1:]] for i, item in enumerate(categories, 1)]
+
     display_page(cols, rows, 1, 1, False)
     string = ''
     while True:

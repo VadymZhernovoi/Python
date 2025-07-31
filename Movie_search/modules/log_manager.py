@@ -82,24 +82,6 @@ def get_last_category():
 
     return db_connector.read_log(pipeline)
 
-def show_last():
-    pipeline = [
-        {'$replaceRoot': {
-            'newRoot': {
-                '$mergeObjects': [  # добавляем нужные поля в нужном порядке
-                    {'timestamp': '$timestamp',
-                     'search_type': '$search_type'},
-                    '$params',  # расплющиваем объект params
-                    {COL_CNT_KEYWORD: '$results_count'}
-                ]
-            }
-        }},
-        {'$sort': {'timestamp': -1}},
-        {'$limit': TOP_QUERIES}
-    ]
-
-    return db_connector.read_log(pipeline)
-
 
 def show_popular_keyword():
     pipeline = [
@@ -155,43 +137,6 @@ def show_popular_category():
     return db_connector.read_log(pipeline)
 
 
-def show_last_keyword():
-    pipeline = [
-        {'$match': {'search_type': 'keyword'}},
-        {'$sort': {'timestamp': -1}},
-        {'$limit': TOP_QUERIES},
-        {'$replaceRoot': {
-            'newRoot': {
-                '$mergeObjects': [  # выводим нужные поля в нужном порядке
-                    {'timestamp': '$timestamp'},
-                    '$params',  # расплющиваем объект params
-                    {'results_count': '$results_count'}
-                ]
-            }
-        }}
-    ]
-
-    return db_connector.read_log(pipeline)
-
-
-def show_last_category():
-    pipeline = [
-        {'$match': {'search_type': 'category_year'}},
-        {'$sort': {'timestamp': -1}},
-        {'$limit': TOP_QUERIES},
-        {'$replaceRoot': {
-            'newRoot': {
-                '$mergeObjects': [  # выводим нужные поля в нужном порядке
-                    {'date': '$timestamp'},
-                    '$params',  # расплющиваем объект params
-                    {'result': '$results_count'}
-                ]
-            }
-        }}
-    ]
-
-    return db_connector.read_log(pipeline)
-
 def get_popular():
     pipeline = [
         {'$group': {
@@ -216,3 +161,57 @@ def get_popular():
     ]
 
     return db_connector.read_log(pipeline)
+
+# def show_last():
+#     pipeline = [
+#         {'$replaceRoot': {
+#             'newRoot': {
+#                 '$mergeObjects': [  # добавляем нужные поля в нужном порядке
+#                     {'timestamp': '$timestamp',
+#                      'search_type': '$search_type'},
+#                     '$params',  # расплющиваем объект params
+#                     {COL_CNT_KEYWORD: '$results_count'}
+#                 ]
+#             }
+#         }},
+#         {'$sort': {'timestamp': -1}},
+#         {'$limit': TOP_QUERIES}
+#     ]
+#
+#     return db_connector.read_log(pipeline)
+#
+# def show_last_keyword():
+#     pipeline = [
+#         {'$match': {'search_type': 'keyword'}},
+#         {'$sort': {'timestamp': -1}},
+#         {'$limit': TOP_QUERIES},
+#         {'$replaceRoot': {
+#             'newRoot': {
+#                 '$mergeObjects': [  # выводим нужные поля в нужном порядке
+#                     {'timestamp': '$timestamp'},
+#                     '$params',  # расплющиваем объект params
+#                     {'results_count': '$results_count'}
+#                 ]
+#             }
+#         }}
+#     ]
+#
+#     return db_connector.read_log(pipeline)
+#
+# def show_last_category():
+#     pipeline = [
+#         {'$match': {'search_type': 'category_year'}},
+#         {'$sort': {'timestamp': -1}},
+#         {'$limit': TOP_QUERIES},
+#         {'$replaceRoot': {
+#             'newRoot': {
+#                 '$mergeObjects': [  # выводим нужные поля в нужном порядке
+#                     {'date': '$timestamp'},
+#                     '$params',  # расплющиваем объект params
+#                     {'result': '$results_count'}
+#                 ]
+#             }
+#         }}
+#     ]
+#
+#     return db_connector.read_log(pipeline)

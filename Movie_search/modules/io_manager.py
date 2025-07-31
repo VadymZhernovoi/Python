@@ -8,11 +8,10 @@ from .db_connector import db_connector
 from .parm_const import (PAGE_SIZE, COL_YEAR_MAX, MONGO_COLS, TOP_QUERIES, COL_SEPARATOR,
                          COL_KEYWORD_MONGO, KEY_RETURN, TXT_RETURN, KEY_EXIT, TXT_EXIT,
                          SEARCH_TYPE, COL_CATEGORY, COL_CATEGORY_MONGO, COL_YEAR_START_MONGO,
-                         COL_YEAR_STOP_MONGO, COL_CNT_KEYWORD, COL_CNT_CATEGORY)
+                         COL_YEAR_STOP_MONGO, COLOR_SELECT, COLOR_RESET, COL_FILM)
 
 console = Console(force_terminal=True, color_system="truecolor")
 _BRACKETS = re.compile(r"\[([^]]+)]")  # компилируем регулярное выражение в объект шаблона для repl_brackets()
-
 
 def repl_brackets(msg: str, color: str = "red"):
     """
@@ -23,7 +22,7 @@ def repl_brackets(msg: str, color: str = "red"):
     :param color: цвет ("red", "blue"...)
     :return: отформатированная строка
     """
-    reset = "[/]"
+
     return _BRACKETS.sub(rf"[{color.lower()}]\1[/]", msg) #{color.lower()}]+[/]", msg)
 
 
@@ -138,13 +137,15 @@ def display_page(cols: list, rows: list[list], page_num: int, total_pages: int, 
     """
     # Создание объекта таблицы
     table = PrettyTable()
-    table.field_names = cols  # шапка таблицы
-    table.align[COL_SEPARATOR] = "l"
-    table.align[MONGO_COLS["search_type"]] = "l"
+    table.field_names = cols                                # шапка таблицы
+    table.align[COL_SEPARATOR] = "r"                        # колонка - выравниваем по правому краю
+    table.align[MONGO_COLS["search_type"]] = "l"            # соответственно по левому краю
     table.align[MONGO_COLS[COL_CATEGORY_MONGO[0]]] = "l"
+    table.align[COL_FILM]= "l"
+    table.align[COL_CATEGORY]= "l"
 
     for align in alignment:
-        table.align[align[0]] = align[1]
+        table.align[align[0]] = align[1]    # выравниваем по принятому параметру
 
     # вывод страницы
     for row in rows:
@@ -315,19 +316,19 @@ def show_single_statistics(tabl: list[dict]):
     return None
 
 
-def combined_lists(tabl_first: list[dict], tabl_second: list[dict]):
-    if is_list_of_dicts_not_empty(tabl_first) and is_list_of_dicts_not_empty(tabl_second):
-        combined = sorted(tabl_first + tabl_second,  # склеиваем два результата выборки
-                          key=lambda d: d.get(COL_CNT_KEYWORD, d.get(COL_CNT_CATEGORY, 0)),
-                          # сортируем по ключам COL_CNT_KEYWORD и COL_CNT_CATEGORY
-                          reverse=True)[:TOP_QUERIES]  # сортируем в обратном порядке и оставляем только TOP_QUERIES
-
-        return combined
-
-    else:
-        print_color("[Данных не найдено!]", "yellow")
-
-        return None
+# def combined_lists(tabl_first: list[dict], tabl_second: list[dict]):
+#     if is_list_of_dicts_not_empty(tabl_first) and is_list_of_dicts_not_empty(tabl_second):
+#         combined = sorted(tabl_first + tabl_second,  # склеиваем два результата выборки
+#                           key=lambda d: d.get(COL_CNT_KEYWORD, d.get(COL_CNT_CATEGORY, 0)),
+#                           # сортируем по ключам COL_CNT_KEYWORD и COL_CNT_CATEGORY
+#                           reverse=True)[:TOP_QUERIES]  # сортируем в обратном порядке и оставляем только TOP_QUERIES
+#
+#         return combined
+#
+#     else:
+#         print_color("[Данных не найдено!]", "yellow")
+#
+#         return None
 
 
 def show_double_statistics(tabl_first: list[dict], tabl_second: list[dict]):
@@ -366,20 +367,21 @@ def show_double_statistics(tabl_first: list[dict], tabl_second: list[dict]):
             rows = add_rows_in_table_out(rows, row_second)
 
     cols = ["№"] + cols
-    cols_ru = [MONGO_COLS.get(col, col) for col in cols]  # приведу названия столбцов в удобочитаемый вид
+    cols_ru = [MONGO_COLS.get(col, col) for col in cols]  # приводим названия столбцов в удобочитаемый вид
 
     display_page(cols_ru, rows, 1, 1, False, (COL_KEYWORD_MONGO[1], "l"))
 
 
-def display_page_by_page(select_col: str, select_body: str, parm_find: tuple, search: str = ''):
+def display_page_by_page(select_col: str, select_body: str, parm_find: tuple, search: str = '', keyword: str=''):
     """
     Команда постраничного вывода таблицы.
     Организовано кэширование запросов.
     Есть возможность листать вперёд/назад и указывать номер страницы
-    :param select_col: перечень столбцов, которые ад вывести в SQL запросе
-    :param select_body: тело самого SQL запроса
-    :param parm_find: параметры, передаваемые в условия SQL запрос
-    :param search: сообщение по чему ищем
+    :param select_col: Перечень столбцов, которые ад вывести в SQL запросе
+    :param select_body: Тело самого SQL запроса
+    :param parm_find: Параметры, передаваемые в условия SQL запрос
+    :param search: Сообщение по чему ищем
+    :param keyword: Ключевое слово, по которому ведётся поиск в названии фильма
     :return:
     """
     select_col = select_col.strip()
@@ -399,6 +401,8 @@ def display_page_by_page(select_col: str, select_body: str, parm_find: tuple, se
     # делаем кеш для страниц фильмов
     cache = {}
     outer = True
+    if keyword:
+        keyword.upper()
 
     while outer:
         if offset not in cache:
@@ -413,7 +417,11 @@ def display_page_by_page(select_col: str, select_body: str, parm_find: tuple, se
         for r, film in enumerate(films[:PAGE_SIZE], start=1):
             row = [r + (page_num - 1) * PAGE_SIZE]
             for i in range(1, len(cols)):
-                row.append(film[cols[i]])
+                if keyword:
+                    row_add = str(film[cols[i]]).replace(keyword, f"{COLOR_SELECT}{keyword}{COLOR_RESET}")
+                else:
+                    row_add = film[cols[i]]
+                row.append(row_add)
             rows.append(row)
         if search:
             print_color(search, "yellow", True, False)
@@ -426,7 +434,7 @@ def display_page_by_page(select_col: str, select_body: str, parm_find: tuple, se
 
         msg = "[#] -номер_страницы / " + msg
         if page_num < total_pages:
-            msg = "[+] -след. / " + msg
+            msg = "[Enter] -след. / " + msg
         if page_num > 1:
             msg = "[-] -пред. / " + msg
 
