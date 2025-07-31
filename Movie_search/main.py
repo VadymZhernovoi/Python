@@ -34,28 +34,23 @@ def form_menu(menu: tuple[dict], title: str = '', main: bool = False):
         try:
             for i in range(len(menu)):
                 r = i + 1
-                # msg = f"[{r}]. {menu[i]["name"]}"
-                # print_color(msg, "Blue", False, False)
                 msg = f"{COLOR_ITEM_MENU}{r}{COLOR_RESET}. {menu[i]["name"]}"
                 print(msg)
             print("-" * max_len_title)
             if main:
-                # msg = f"[{KEY_RETURN[0]}] / [{KEY_EXIT[0]}] - {KEY_EXIT[1]}"
                 msg = (f"{COLOR_ITEM_MENU}{KEY_RETURN[0]}{COLOR_RESET} / "
                       f"{COLOR_ITEM_MENU}{KEY_EXIT[0]}{COLOR_RESET} - {KEY_EXIT[1]}")
                 print(msg, "\n")
             else:
                 msg = f"{TXT_RETURN} / [{KEY_EXIT[0]}] - {KEY_EXIT[1]}"
                 print_color(msg, "Blue", False)
-                # msg = f"{TXT_RETURN} / {COLOR_ITEM_MENU}{KEY_EXIT[0]}{COLOR_RESET} - {KEY_EXIT[1]})"
-                # print(msg)
-
 
             choice = input("Выберите: ")
 
             check_for_exit(choice, main)
 
             if choice == KEY_RETURN[0]:
+
                 return None
 
             msg_error_num = f"Укажите правильно номер пункта. Доступные значения от 0 до {len(menu) + 1}"
@@ -66,9 +61,9 @@ def form_menu(menu: tuple[dict], title: str = '', main: bool = False):
                 choice = int(choice)
                 if 0 < choice <= len(menu) + 1:
                     func_run = menu[choice - 1]["menu_func"]
-                    func = globals().get(func_run)  # находим функция
-                    if callable(func):  # проверяю исполнимая она?
-                        func()  # вызов
+                    func = globals().get(func_run)  # находим функцию
+                    if callable(func):              # проверяем исполнимая она?
+                        func()                      # вызываем функцию
                     else:
                         raise ValueError(f"Функция '{func_run!r}' не найдена")
                 else:
