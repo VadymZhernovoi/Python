@@ -1,5 +1,5 @@
 from .db_connector import db_connector
-from .constants import TOP_QUERIES, COL_CNT_CATEGORY, COL_CNT_KEYWORD, SEARCH_TYPE
+from .parm_const import TOP_QUERIES, COL_CNT_CATEGORY, COL_CNT_KEYWORD, SEARCH_TYPE
 
 def get_last_uniq():
     pipeline = [

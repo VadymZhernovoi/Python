@@ -5,10 +5,10 @@ from rich.prompt import Prompt
 import re
 
 from .db_connector import db_connector
-from .constants import (PAGE_SIZE, COL_YEAR_MAX, MONGO_COLS, TOP_QUERIES, COL_SEPARATOR,
-                              COL_KEYWORD_MONGO, KEY_RETURN, TXT_RETURN, KEY_EXIT, TXT_EXIT,
-                              SEARCH_TYPE, COL_CATEGORY, COL_CATEGORY_MONGO, COL_YEAR_START_MONGO,
-                              COL_YEAR_STOP_MONGO, COL_CNT_KEYWORD, COL_CNT_CATEGORY)
+from .parm_const import (PAGE_SIZE, COL_YEAR_MAX, MONGO_COLS, TOP_QUERIES, COL_SEPARATOR,
+                         COL_KEYWORD_MONGO, KEY_RETURN, TXT_RETURN, KEY_EXIT, TXT_EXIT,
+                         SEARCH_TYPE, COL_CATEGORY, COL_CATEGORY_MONGO, COL_YEAR_START_MONGO,
+                         COL_YEAR_STOP_MONGO, COL_CNT_KEYWORD, COL_CNT_CATEGORY)
 
 console = Console(force_terminal=True, color_system="truecolor")
 _BRACKETS = re.compile(r"\[([^]]+)]")  # компилируем регулярное выражение в объект шаблона для repl_brackets()
@@ -18,12 +18,13 @@ def repl_brackets(msg: str, color: str = "red"):
     """
     Функция замены в строке "самодельных" управляющих символов на символы форматирования для модуля rich
     Выделяемы символы должны быть взяты в [], например: "Укажите [#] - номер страницы"
-    Заменяет "[" -> "[color]" и "]" -> "[/color]"
+    Заменяет "[" -> "[color]" и "]" -> "[/]"
     :param msg: строка, которую надо отформатировать
     :param color: цвет ("red", "blue"...)
     :return: отформатированная строка
     """
-    return _BRACKETS.sub(rf"[{color.lower()}]\1[/{color.lower()}]", msg)
+    reset = "[/]"
+    return _BRACKETS.sub(rf"[{color.lower()}]\1[/]", msg) #{color.lower()}]+[/]", msg)
 
 
 def input_color(msg: str, color: str = "red", before: bool = True) -> str:

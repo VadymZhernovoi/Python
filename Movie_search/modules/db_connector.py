@@ -4,7 +4,6 @@ from collections import defaultdict
 from dotenv import load_dotenv
 import os
 
-from contextlib import contextmanager
 from typing import Any
 
 import pymysql

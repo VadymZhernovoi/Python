@@ -1,4 +1,4 @@
-from main import (show_popular_category, show_popular_keyword, show_last, show_last_keyword, show_last_category, show_popular_query)
+from main import (show_popular_category, show_popular_keyword, get_last_keyword, get_last_category, get_last_uniq)
 from modules.io_manager import show_statistics
 
 def show_single():
@@ -7,7 +7,7 @@ def show_single():
     #tabl = ['w']
     show_statistics(tabl)
 
-    tabl = show_last_category()
+    tabl = get_last_uniq()
     show_statistics(tabl)
 
     return None
@@ -20,8 +20,8 @@ def show_full():
     #tabl_keyword = []
     show_statistics(tabl_keyword, tabl_category)
 
-    tabl_keyword = show_last_keyword()
-    tabl_category = show_last_category()
+    tabl_keyword = get_last_keyword()
+    tabl_category = get_last_category()
     # tabl_keyword = []
     show_statistics(tabl_keyword, tabl_category)
 

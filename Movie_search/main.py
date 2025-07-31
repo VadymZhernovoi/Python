@@ -10,9 +10,9 @@ from modules.log_manager import (show_popular_keyword, show_popular_category, ge
 
 from modules.db_request import (select_all_category, select_by_category_cols, select_by_category_body,
                                 select_by_title_cols, select_by_title_body)
-from modules.constants import (MAIN_MENU, MENU_STATISTICS, SEARCH_TYPE, COL_CATEGORY_ID, COL_CATEGORY,
-                               COL_YEAR_MIN, COL_YEAR_MAX, KEY_RETURN, TXT_RETURN, KEY_EXIT, TXT_EXIT,
-                               COL_KEYWORD_MONGO, BEGIN_MSG_STATISTICS)
+from modules.parm_const import (MAIN_MENU, MENU_STATISTICS, SEARCH_TYPE, COL_CATEGORY_ID, COL_CATEGORY,
+                                COL_YEAR_MIN, COL_YEAR_MAX, KEY_RETURN, TXT_RETURN, KEY_EXIT, TXT_EXIT,
+                                COL_KEYWORD_MONGO, BEGIN_MSG_STATISTICS)
 
 
 def form_menu(menu: tuple[dict], title: str = '', main: bool = False):
@@ -117,6 +117,7 @@ def search_by_category():
 
     categories = db_connector.query_execute(select_all_category, fetch="all")
     # вывод результата в таблицу
+    print_color("[Список найденных жанров]", "yellow", True, False)
     # добавляем колонки в таблицу кроме последней (category_id нужна для быстрого поиска, что бы не делать 3-й JOIN)
     cols = ["№"]
     cols.extend(list(categories[0])[:-1])
@@ -126,12 +127,12 @@ def search_by_category():
     string = ''
     while True:
         try:
-            msg = f"Введите Номер / Название категории из списка ({TXT_RETURN}, {TXT_EXIT})"
+            msg = f"Введите Номер / Название жанра из списка ({TXT_RETURN}, {TXT_EXIT})"
             string = input_color(msg, "Cyan")
 
             check_for_exit(string)
             if not string:
-                print_error(f"Не указан Номер / Название категории!")
+                print_error(f"Не указан Номер / Название жанра!")
                 continue
             if string == KEY_RETURN[0]:
                 return None
@@ -143,7 +144,7 @@ def search_by_category():
                     enumerate(categories, 1)
                     category_selected = categories[num - 1]
                 else:
-                    print_error(f"Категория под номером {string} в списке не найдена.")
+                    print_error(f"Жанр под номером {string} в списке не найдена.")
             else:
                 category_selected = list(filter(lambda d: d[COL_CATEGORY].upper() == string.upper(), categories))[0]
 
@@ -189,7 +190,7 @@ def search_by_category():
                         continue
 
         except IndexError:
-            print_error(f"Категория '{string}' в списке не найдена.")
+            print_error(f"Жанр '{string}' в списке не найдена.")
 
         except Exception as e:
             print_error(f"Что то пошло не так:\n{e}")
@@ -199,7 +200,7 @@ def display_by_category(search_parm: dict, print_run: bool = True):
     """
     функция вывода найденных по жанру и годам фильмов
     :param search_parm: словарь с выбранными параметрами
-                        {category_id': 2, 'Категория': 'Animation', 'year_start': 1990, 'year_stop': 2025}
+                        {category_id': 2, 'гория': 'Animation', 'year_start': 1990, 'year_stop': 2025}
     :param print_run: True - печатать строку с выбранными параметрами
     :return:
     """
