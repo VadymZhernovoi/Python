@@ -16,7 +16,7 @@ from pymongo import MongoClient, errors, ReadPreference
 # Загружаю переменные из файла .env
 load_dotenv()
 
-# сделаем защищенный клас для открытия и закрытия connection с MySQL
+# клас (контекстный менеджер) для открытия и закрытия connection с MySQL
 class _MySQLConnection:
     def __init__(self, config):
         self.config = config
