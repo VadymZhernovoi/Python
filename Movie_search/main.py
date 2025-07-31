@@ -45,9 +45,11 @@ def form_menu(menu: tuple[dict], title: str = '', main: bool = False):
                       f"{COLOR_ITEM_MENU}{KEY_EXIT[0]}{COLOR_RESET} - {KEY_EXIT[1]}")
                 print(msg, "\n")
             else:
-                msg = f"{TXT_RETURN} ([{KEY_EXIT[0]}] - {KEY_EXIT[1]})"
-                # msg = f"{TXT_RETURN} ({COLOR_ITEM_MENU}{KEY_EXIT[0]}{COLOR_RESET} - {KEY_EXIT[1]})"
+                msg = f"{TXT_RETURN} / [{KEY_EXIT[0]}] - {KEY_EXIT[1]}"
                 print_color(msg, "Blue", False)
+                # msg = f"{TXT_RETURN} / {COLOR_ITEM_MENU}{KEY_EXIT[0]}{COLOR_RESET} - {KEY_EXIT[1]})"
+                # print(msg)
+
 
             choice = input("Выберите: ")
 
