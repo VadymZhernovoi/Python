@@ -77,9 +77,9 @@ def check_for_exit(string: str, main_menu: bool = False):
         exit(0)  # закрыть программу
 
     if string == KEY_EXIT[0]:
-        msg = "Вы действительно хотите выйти из программы ([y]/[Y] - выйти, [любое] - остаться)"
+        msg = "Вы действительно хотите выйти из программы? ([y] - выйти, [иначе] - остаться)"
         key = input_color(msg, "red")
-        if key.lower() == 'y':
+        if key.lower() in ('y', 'Y', 'я', 'Я'):
             print_color("Спасибо за внимание! До встречи.", "cyan")
 
             exit(0)  # закрыть программу
@@ -157,7 +157,7 @@ def display_page(cols: list, rows: list[list], page_num: int, total_pages: int, 
 
     print(table)
     if footer:
-        print(f"--- Страница {page_num} из {total_pages} ---")
+        print_color(f"--- Страница [{page_num}] из {total_pages} ---", "yellow", False, False)
 
     return None
 
@@ -363,7 +363,7 @@ def display_page_by_page(select_col: str, select_body: str, parm_find: tuple, se
     Команда постраничного вывода таблицы.
     Организовано кэширование запросов.
     Есть возможность листать вперёд/назад и указывать номер страницы
-    :param select_col: Перечень столбцов, которые ад вывести в SQL запросе
+    :param select_col: Перечень столбцов, которые надо вывести в SQL запросе
     :param select_body: Тело самого SQL запроса
     :param parm_find: Параметры, передаваемые в условия SQL запрос
     :param search: Сообщение по чему ищем
@@ -418,11 +418,11 @@ def display_page_by_page(select_col: str, select_body: str, parm_find: tuple, se
         if total_pages <= 1:
             break
 
-        msg = "[#] -номер_страницы / " + msg
+        msg = "[#] номер_страницы / " + msg
         if page_num < total_pages:
-            msg = "[Enter] -след. / " + msg
+            msg = "[Enter] след. / " + msg
         if page_num > 1:
-            msg = "[-] -пред. / " + msg
+            msg = "[-] пред. / " + msg
 
         while True:
             nav = input_color(f"Навигация: {msg}", "cyan", False).lower()
