@@ -38,8 +38,9 @@ def form_menu(menu: tuple[dict], title: str = '', main: bool = False):
                 print(msg)
             print("-" * max_len_title)
             if main:
-                msg = (f"{COLOR_ITEM_MENU}{KEY_RETURN[0]}{COLOR_RESET} / "
-                      f"{COLOR_ITEM_MENU}{KEY_EXIT[0]}{COLOR_RESET} - {KEY_EXIT[1]}")
+                # msg = (f"{COLOR_ITEM_MENU}{KEY_RETURN[0]}{COLOR_RESET} / "
+                #       f"{COLOR_ITEM_MENU}{KEY_EXIT[0]}{COLOR_RESET} - {KEY_EXIT[1]}")
+                msg = f"{COLOR_ITEM_MENU}{KEY_EXIT[0]}{COLOR_RESET} - {KEY_EXIT[1]}"
                 print(msg, "\n")
             else:
                 msg = f"{TXT_RETURN} / [{KEY_EXIT[0]}] - {KEY_EXIT[1]}"
